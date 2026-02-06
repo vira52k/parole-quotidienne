@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Versets Bibliques</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #2c5aa0;
+            margin-bottom: 20px;
+        }
+        
+        .verse-container {
+            background-color: #f9fafc;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 4px solid #4a8cff;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .verse-text {
+            font-size: 1.4rem;
+            line-height: 1.5;
+            color: #222;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+        
+        .verse-reference {
+            font-size: 1.1rem;
+            color: #4a8cff;
+            font-weight: 600;
+            text-align: right;
+        }
+        
+        .generate-btn {
+            background-color: #4a8cff;
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .generate-btn:hover {
+            background-color: #2c5aa0;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .verse-text {
+                font-size: 1.2rem;
+            }
+            
+            .generate-btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Générateur de Versets Bibliques</h1>
+        
+        <div class="verse-container">
+            <div class="verse-text" id="verseText">je ne cesse de rendre grâces pour vous, faisant mention de vous dans mes prières, afin que le Dieu de notre Seigneur Jésus-Christ, le Père de gloire, vous donne un esprit de sagesse et de révélation, dans sa connaissance, et qu'il illumine les yeux de votre coeur, pour que vous sachiez quelle est l'espérance qui s'attache à son appel, quelle est la richesse de la gloire de son héritage qu'il réserve aux saints, et quelle est envers nous qui croyons l'infinie grandeur de sa puissance, se manifestant avec efficacité par la vertu de sa force.</div>
+            <div class="verse-reference" id="verseReference">Éphésiens 1:16-19</div>
+        </div>
+        
+        <button class="generate-btn" id="generateBtn">Verset suivant</button>
+    </div>
+
+    <script>
+        // BASE DE DONNÉES DE VERSETS
+        const verses = [
+            {
+                text: "je ne cesse de rendre grâces pour vous, faisant mention de vous dans mes prières, afin que le Dieu de notre Seigneur Jésus-Christ, le Père de gloire, vous donne un esprit de sagesse et de révélation, dans sa connaissance, et qu'il illumine les yeux de votre coeur, pour que vous sachiez quelle est l'espérance qui s'attache à son appel, quelle est la richesse de la gloire de son héritage qu'il réserve aux saints, et quelle est envers nous qui croyons l'infinie grandeur de sa puissance, se manifestant avec efficacité par la vertu de sa force.",
+                reference: "Éphésiens 1:16-19"
+            },
+            {
+                text: "A cause de cela, je fléchis les genoux devant le Père, duquel tire son nom toute famille dans les cieux et sur la terre, afin qu'il vous donne, selon la richesse de sa gloire, d'être puissamment fortifiés par son Esprit dans l'homme intérieur, en sorte que Christ habite dans vos coeurs par la foi; afin qu'étant enracinés et fondés dans l'amour, vous puissiez comprendre avec tous les saints quelle est la largeur, la longueur, la profondeur et la hauteur, et connaître l'amour de Christ, qui surpasse toute connaissance, en sorte que vous soyez remplis jusqu'à toute la plénitude de Dieu.",
+                reference: "Éphésiens 3:14-19"
+            },
+            {
+                text: "C'est pour cela que nous aussi, depuis le jour où nous en avons été informés, nous ne cessons de prier Dieu pour vous, et de demander que vous soyez remplis de la connaissance de sa volonté, en toute sagesse et intelligence spirituelle, pour marcher d'une manière digne du Seigneur et lui être entièrement agréables, portant des fruits en toutes sortes de bonnes oeuvres et croissant par la connaissance de Dieu, fortifiés à tous égards par sa puissance glorieuse, en sorte que vous soyez toujours et avec joie persévérants et patients.",
+                reference: "Colossiens 1:9-11"
+            }
+        ];
+        
+        // Éléments DOM
+        const verseTextElement = document.getElementById('verseText');
+        const verseReferenceElement = document.getElementById('verseReference');
+        const generateBtn = document.getElementById('generateBtn');
+        
+        // Variable pour suivre l'index du verset courant
+        let currentVerseIndex = 0;
+        
+        // Fonction pour afficher le verset suivant
+        function showNextVerse() {
+            // Passer au verset suivant
+            currentVerseIndex++;
+            
+            // Si on dépasse le dernier verset, revenir au premier
+            if (currentVerseIndex >= verses.length) {
+                currentVerseIndex = 0;
+            }
+            
+            // Mettre à jour l'affichage
+            verseTextElement.textContent = verses[currentVerseIndex].text;
+            verseReferenceElement.textContent = verses[currentVerseIndex].reference;
+        }
+        
+        // Initialiser l'application
+        function initApp() {
+            // Afficher le premier verset au chargement
+            verseTextElement.textContent = verses[currentVerseIndex].text;
+            verseReferenceElement.textContent = verses[currentVerseIndex].reference;
+            
+            // Ajouter l'événement au bouton
+            generateBtn.addEventListener('click', showNextVerse);
+        }
+        
+        // Démarrer l'application quand la page est chargée
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
